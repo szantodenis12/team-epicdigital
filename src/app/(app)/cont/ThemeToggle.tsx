@@ -35,7 +35,7 @@ export function ThemeToggle({ theme }: { theme?: Theme }) {
 
   return (
     <div>
-      <span className="label">Tema</span>
+      {/* Fără etichetă proprie: fișa din pagina Cont se numește deja „Tema". */}
       <div className="flex flex-wrap gap-1.5">
         {THEMES.map((t) => (
           <button

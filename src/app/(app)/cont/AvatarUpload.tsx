@@ -58,10 +58,10 @@ export function AvatarUpload({ profile }: { profile: Profile }) {
     router.refresh();
   }
 
+  /* Fără titlu propriu: componenta stă într-o fișă din pagina Cont, care își
+     pune singură antetul. Altfel „Poza mea" s-ar repeta sub „Profil". */
   return (
-    <section>
-      <h2 className="mb-1 font-semibold">Poza mea</h2>
-      <p className="mb-3 text-sm text-muted">Apare lângă numele tău pe tichete. JPG, PNG sau WebP, max 2 MB.</p>
+    <div>
       <div className="flex items-center gap-4">
         <Avatar person={profile} size={64} />
         <div className="flex flex-wrap items-center gap-2">
@@ -89,9 +89,10 @@ export function AvatarUpload({ profile }: { profile: Profile }) {
           if (file) void upload(file);
         }}
       />
+      <p className="mt-2 text-xs text-muted">JPG, PNG sau WebP, maximum 2 MB. Apare lângă numele tău pe tichete.</p>
       {busy && <p className="mt-2 text-sm text-muted">Se lucrează…</p>}
       {!busy && msg.error && <p className="mt-2 text-sm text-danger">{msg.error}</p>}
       {!busy && msg.ok && <p className="mt-2 text-sm text-forest">{msg.ok}</p>}
-    </section>
+    </div>
   );
 }
