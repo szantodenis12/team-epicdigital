@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0e1311;
+  --panel: #121815;
+  --raise: #1a211d;
+  --line: #262e2a;
+  --fg: #e7e4dc;
+  --muted: #858b87;
+  --emerald: #1fdc93;
+  --forest: #128c5e;
+  --danger: #ff6b3d;
+  --warn: #e0a43a;
+
+  /* Tonurile generate din nume (lib/colors.ts: client, persoana, departament)
+     si culorile de status. Stau aici, nu in TypeScript, ca sa se schimbe odata
+     cu tema - vezi comentariul din colors.ts. */
+  --tone-0: #4cc38a;
+  --tone-1: #e0a43a;
+  --tone-2: #e8794a;
+  --tone-3: #b38bd1;
+  --tone-4: #9bc24a;
+  --tone-5: #3cc4b4;
+  --tone-6: #e26c8a;
+  --tone-7: #c9b48a;
+
+  --status-nou: #9aa09c;
+  --status-lucru: #1fdc93;
+  --status-review: #e0a43a;
+  --status-gata: #4cc38a;
+  --status-blocat: #ff6b3d;
+
+  color-scheme: dark;
+}
+
+/* Tema deschisă. Aceleași nume de token, ca nimic din aplicație să nu știe în
+   ce temă e. Nu e o inversare a celei închise: fundalurile sunt alb-cald, iar
+   verdele, portocaliul și galbenul sunt coborâte până unde pot purta text alb
+   pe ele - pe alb, culorile din tema închisă ar străluci și ar fi ilizibile. */
+:root[data-theme="light"] {
+  --bg: #f4f1ea;
+  --panel: #fffdf8;
+  --raise: #eae5db;
+  --line: #d2cabb;
+  --fg: #191d1a;
+  --muted: #5e6762;
+  --emerald: #097c50;
+  --forest: #07663f;
+  --danger: #b8350f;
+  --warn: #8a5a0f;
+
+  /* Aceleasi tonuri, coborate ca sa se citeasca pe hartie in loc sa straluceasca
+     pe sticla. Nuanta ramane aceeasi, ca un client sa-si pastreze culoarea cu
+     care echipa s-a obisnuit; se schimba doar luminozitatea si saturatia. */
+  --tone-0: #0f7a4e;
+  --tone-1: #8a5a0f;
+  --tone-2: #a8431c;
+  --tone-3: #6b4a8f;
+  --tone-4: #566e16;
+  --tone-5: #0b6e65;
+  --tone-6: #a32b4c;
+  --tone-7: #6e5b32;
+
+  --status-nou: #5e6762;
+  --status-lucru: #097c50;
+  --status-review: #8a5a0f;
+  --status-gata: #0f7a4e;
+  --status-blocat: #b8350f;
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-raise: var(--raise);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-emerald: var(--emerald);
+  --color-forest: var(--forest);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --font-sans: var(--font-grotesk), "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-unbounded), var(--font-grotesk), sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+select option {
+  background: var(--raise);
+  color: var(--fg);
+}
+
+.field {
+  @apply w-full rounded-lg border border-line bg-raise px-3 py-2 text-[15px] outline-none transition placeholder:text-muted/70 focus:border-emerald/60;
+}
+.btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg bg-emerald px-4 py-2 text-sm font-semibold text-bg transition hover:bg-emerald/85 disabled:opacity-50;
+}
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg border border-line px-3 py-2 text-sm font-medium transition hover:border-fg/40 disabled:opacity-50;
+}
+.label {
+  @apply mb-1 block text-xs font-semibold uppercase tracking-wider text-muted;
+}
+
+/* Corecții doar pentru tema deschisă.
+
+   Toate acoperă locuri unde culoarea nu vine dintr-un token sau unde perechea
+   fundal/cerneală are sens doar pe întuneric, deci nu se întoarce singură. */
+
+/* Butonul se închide la hover; „bg-emerald/85" pe fundal alb l-ar face mai
+   deschis, adică un buton care pălește exact când îl apeși. */
+:root[data-theme="light"] .btn:hover:not(:disabled) {
+  background: var(--forest);
+}
+
+/* Trei hover-uri sunt scrise direct cu nuanța din tema închisă; pe o suprafață
+   deschisă ar fi pete negre. */
+:root[data-theme="light"] .hover\:bg-\[\#202924\]:hover,
+:root[data-theme="light"] .hover\:bg-\[\#232c27\]:hover,
+:root[data-theme="light"] .group:hover .group-hover\:bg-\[\#202924\] {
+  background-color: #e1dbd0;
+}
+
+/* Litera din bulina de avatar si din butonul de departament ramane culoarea
+   paginii in AMBELE teme, si asta e corect acum: pe inchis tonurile sunt
+   pastelate si litera iese inchisa, pe deschis tonurile sunt coborate si litera
+   iese deschisa. Aici exista o regula care o facea inchisa si pe tema deschisa,
+   scrisa cand tonurile erau inca pastelate peste tot - dupa ce au devenit
+   inchise (vezi --tone-* mai sus) ajungea inchis pe inchis, ~2.3:1. */
+
+/* Biletul „gata" e verde închis cu cerneala paginii peste: pe deschis cerneala
+   e aproape neagră, deci pe verde nu s-ar mai citi. */
+:root[data-theme="light"] .bg-forest.text-fg {
+  color: var(--bg);
+}
+
+/* Bilet: crestături rotunde la linia de rupere. */
+.stub-body {
+  mask:
+    radial-gradient(circle 9px at 100% 0, #0000 98%, #000) top right / 100% 51% no-repeat,
+    radial-gradient(circle 9px at 100% 100%, #0000 98%, #000) bottom right / 100% 51% no-repeat;
+}
+.stub-side {
+  mask:
+    radial-gradient(circle 9px at 0 0, #0000 98%, #000) top left / 100% 51% no-repeat,
+    radial-gradient(circle 9px at 0 100%, #0000 98%, #000) bottom left / 100% 51% no-repeat;
+}
