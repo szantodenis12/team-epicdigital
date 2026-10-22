@@ -6,6 +6,7 @@ import { Copy, UserPlus } from "lucide-react";
 import { addClient, inviteMember, setActive, setClientActive, setRole } from "@/app/actions/team";
 import { Avatar } from "@/components/Badges";
 import type { Client, Profile, Role } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 export function InviteForm() {
   const [state, action, pending] = useActionState(inviteMember, null);
@@ -52,7 +53,7 @@ function CopyLink({ link }: { link: string }) {
 export function MemberRow({ p, isMe }: { p: Profile; isMe: boolean }) {
   const [pending, start] = useTransition();
   const [error, setError] = useState("");
-  const run = (fn: () => Promise<void>) => start(async () => { try { await fn(); setError(""); } catch (e) { setError(e instanceof Error ? e.message : "Eroare."); } });
+  const run = (fn: () => Promise<void>) => start(async () => { try { await fn(); setError(""); } catch (e) { setError(userMessage(e, "Eroare.")); } });
 
   return (
     <li className={`flex flex-wrap items-center gap-3 px-3 py-3 ${pending ? "opacity-60" : ""} ${p.active ? "" : "bg-bg"}`}>
@@ -89,7 +90,7 @@ export function Clients({ clients }: { clients: Client[] }) {
     <div>
       <form
         className="mb-3 flex gap-2"
-        action={(fd) => start(async () => { try { await addClient(fd); setError(""); } catch (e) { setError(e instanceof Error ? e.message : "Eroare."); } })}
+        action={(fd) => start(async () => { try { await addClient(fd); setError(""); } catch (e) { setError(userMessage(e, "Eroare.")); } })}
       >
         <input name="name" required className="field" placeholder="Nume client" />
         <button className="btn" disabled={pending}>Adaugă</button>

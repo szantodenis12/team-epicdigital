@@ -10,6 +10,7 @@ import { uploadFiles } from "@/lib/upload";
 import { displayName } from "@/lib/format";
 import { BRIEF_KINDS, emptyBrief, type Brief, type BriefKind } from "@/lib/brief";
 import { PRIORITIES, TYPES, type Client, type Department, type Profile, type Template } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 const KIND_ICON = { social: Megaphone, productie: Clapperboard };
 
@@ -42,7 +43,7 @@ export function NewTicketForm({ clients, people, departments, templates, meId, m
       }
       router.push(`/tichete/${id}`);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Eroare la salvare.");
+      setError(userMessage(e, "Eroare la salvare."));
       setBusy("");
     }
   }

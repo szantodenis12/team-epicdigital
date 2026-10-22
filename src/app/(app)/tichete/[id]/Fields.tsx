@@ -7,6 +7,7 @@ import { deadlineTone } from "@/components/Badges";
 import { STATUS_TONE } from "@/lib/colors";
 import { displayName } from "@/lib/format";
 import { PRIORITIES, STATUSES, TYPES, type Client, type Department, type Profile, type Ticket } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 const control = "w-full cursor-pointer appearance-none bg-transparent text-[15px] font-semibold outline-none";
 
@@ -36,7 +37,7 @@ export function Fields({ t, clients, people, departments, canApprove }: {
         await updateTicket(t.id, patch);
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
 

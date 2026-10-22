@@ -5,6 +5,7 @@ import { Pause, Play } from "lucide-react";
 import { startTimer, stopTimer } from "@/app/actions/tickets";
 import { displayName } from "@/lib/format";
 import type { Profile, Timer as TimerRow } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 /** hh:mm:ss din secunde. */
 function clock(seconds: number) {
@@ -51,7 +52,7 @@ export function Timer({ ticketId, mine = null, others = [], people = {} }: {
         await fn();
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
 

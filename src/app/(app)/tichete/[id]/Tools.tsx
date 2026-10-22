@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { CalendarSync, LayoutTemplate } from "lucide-react";
 import { makeRecurring, saveTemplate } from "@/app/actions/tickets";
+import { userMessage } from "@/lib/errors";
 
 // Unelte rare, la finalul tichetului: șablon din tichet și repetare lunară.
 export function Tools({ ticketId, title, isAdmin }: { ticketId: number; title: string; isAdmin: boolean }) {
@@ -17,7 +18,7 @@ export function Tools({ ticketId, title, isAdmin }: { ticketId: number; title: s
         setMsg(ok);
         setOpen("");
       } catch (e) {
-        setMsg(e instanceof Error ? e.message : "Eroare.");
+        setMsg(userMessage(e, "Eroare."));
       }
     });
 

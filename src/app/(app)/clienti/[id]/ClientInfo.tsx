@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { FolderOpen, Pencil } from "lucide-react";
 import { updateClient } from "@/app/actions/team";
 import type { Client } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 // Linkul de Drive și notițele despre client. Doar adminul le schimbă.
 export function ClientInfo({ client, isAdmin }: { client: Client; isAdmin: boolean }) {
@@ -22,7 +23,7 @@ export function ClientInfo({ client, isAdmin }: { client: Client; isAdmin: boole
               setEditing(false);
               setError("");
             } catch (e) {
-              setError(e instanceof Error ? e.message : "Eroare.");
+              setError(userMessage(e, "Eroare."));
             }
           })
         }

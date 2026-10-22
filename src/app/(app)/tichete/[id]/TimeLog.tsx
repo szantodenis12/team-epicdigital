@@ -6,6 +6,7 @@ import { addTime, deleteTime } from "@/app/actions/tickets";
 import { displayName, fmtDate, fmtMinutes } from "@/lib/format";
 import type { Profile, TimeEntry, Timer as TimerRow } from "@/lib/types";
 import { Timer } from "./Timer";
+import { userMessage } from "@/lib/errors";
 
 const QUICK = [15, 30, 60, 120];
 
@@ -44,7 +45,7 @@ export function TimeLog({ ticketId, entries, people, meId, isAdmin, timerMine, t
         setNote("");
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
 

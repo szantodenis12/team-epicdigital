@@ -5,6 +5,7 @@ import { Clapperboard, Megaphone, Pencil } from "lucide-react";
 import { updateTicket } from "@/app/actions/tickets";
 import { BriefEditor, BriefView } from "@/components/Brief";
 import { BRIEF_KINDS, emptyBrief, type Brief, type BriefKind } from "@/lib/brief";
+import { userMessage } from "@/lib/errors";
 
 const KIND_ICON = { social: Megaphone, productie: Clapperboard };
 
@@ -20,7 +21,7 @@ export function BriefSection({ ticketId, brief }: { ticketId: number; brief: Bri
         setDraft(null);
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
 

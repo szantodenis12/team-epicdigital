@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { setTheme } from "@/app/actions/account";
 import type { Theme } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 const THEMES: { key: Theme; label: string }[] = [
   { key: "dark", label: "Închis" },
@@ -28,7 +29,7 @@ export function ThemeToggle({ theme }: { theme?: Theme }) {
       } catch (e) {
         setCurrent(prev);
         document.documentElement.setAttribute("data-theme", prev);
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
   };

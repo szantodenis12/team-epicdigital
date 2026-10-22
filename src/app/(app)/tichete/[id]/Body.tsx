@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { ExternalLink, Pencil } from "lucide-react";
 import { updateTicket } from "@/app/actions/tickets";
 import type { Ticket } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 const linkify = (text: string) =>
   text.split(/(https?:\/\/[^\s)]+)/g).map((part, i) =>
@@ -34,7 +35,7 @@ export function Body({ t, fields }: { t: Ticket; fields: React.ReactNode }) {
               setEditing(false);
               setError("");
             } catch (e) {
-              setError(e instanceof Error ? e.message : "Eroare.");
+              setError(userMessage(e, "Eroare."));
             }
           })
         }

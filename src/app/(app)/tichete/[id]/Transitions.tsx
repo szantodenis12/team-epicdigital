@@ -5,6 +5,7 @@ import { CheckCheck, CornerUpLeft, Hand, Pause, Play, RotateCcw, Send } from "lu
 import { updateTicket } from "@/app/actions/tickets";
 import { STATUS_TONE } from "@/lib/colors";
 import type { Status, Ticket } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 /* Pașii, ca butoane.
 
@@ -64,7 +65,7 @@ export function Transitions({ t, meId, canApprove, approverName }: {
         await updateTicket(t.id, patch);
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
 

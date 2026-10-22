@@ -8,6 +8,7 @@ import { FilePicker } from "@/components/FilePicker";
 import { uploadFiles } from "@/lib/upload";
 import { displayName, fmtDateTime, fmtSize } from "@/lib/format";
 import type { Profile, TicketFile } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 export function Files({ ticketId, files, people, meId, isAdmin }: {
   ticketId: number; files: TicketFile[]; people: Record<string, Profile>; meId: string; isAdmin: boolean;
@@ -40,7 +41,7 @@ export function Files({ ticketId, files, people, meId, isAdmin }: {
     try {
       window.location.assign(await fileDownloadUrl(id));
     } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Eroare la descărcare.");
+      setMsg(userMessage(e, "Eroare la descărcare."));
     }
   }
 

@@ -7,6 +7,7 @@ import {
 } from "@/app/actions/team";
 import { displayName } from "@/lib/format";
 import type { Client, Department, Profile, Recurring, Template } from "@/lib/types";
+import { userMessage } from "@/lib/errors";
 
 const COLORS = ["#3CC4B4", "#E26C8A", "#E0A43A", "#4CC38A", "#B38BD1", "#E8794A", "#9BC24A", "#C9B48A"];
 
@@ -19,7 +20,7 @@ function useRun() {
         await fn();
         setError("");
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Eroare.");
+        setError(userMessage(e, "Eroare."));
       }
     });
   return { pending, error, run };

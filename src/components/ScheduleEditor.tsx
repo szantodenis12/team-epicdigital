@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { setSchedule } from "@/app/actions/team";
 import { fmtMinutes } from "@/lib/format";
 import { DAYS, DEFAULT_SCHEDULE, cleanSchedule, weekMinutes, type Schedule } from "@/lib/schedule";
+import { userMessage } from "@/lib/errors";
 
 const PRESETS: { label: string; s: Schedule }[] = [
   { label: "L–V 9–17", s: DEFAULT_SCHEDULE },
@@ -76,7 +77,7 @@ export function ScheduleEditor({ userId, schedule, onDone }: { userId: string; s
                 setMsg({ ok: "Salvat." });
                 onDone?.();
               } catch (e) {
-                setMsg({ error: e instanceof Error ? e.message : "Eroare." });
+                setMsg({ error: userMessage(e, "Eroare.") });
               }
             })
           }
