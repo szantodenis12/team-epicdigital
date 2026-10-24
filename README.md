@@ -81,5 +81,34 @@ src/lib/colors.ts      tonurile generate din nume; valorile stau ca variabile CS
 
 **Două bucket-uri de storage, amândouă private:** `ticket-files` (50 MB/fișier) și `avatars` (2 MB, doar jpeg/png/webp). Pozele se servesc prin adrese semnate, generate la încărcarea paginii — o poză de profil e tot un dat personal, iar un bucket public ar însemna o adresă care merge pentru oricine o are.
 
+## Tichete din linia de comandă (și din Claude)
+
+`scripts/tichet.mjs` deschide tichete fără să treci prin interfață — unul sau mai
+multe deodată, cu pași de checklist și fișiere atașate.
+
+```bash
+node --env-file=.env.local scripts/tichet.mjs   --titlu "Actualizează textul emailului de confirmare" --agent Roland   --client "Alexia" --tip continut --pasi "Text rescris|Aprobat"   --fisier ./preview.png
+```
+
+Fără argumente îți scrie singur ce acceptă. `--din lista.json` creează mai multe
+deodată, iar `--dry` arată ce ar face fără să scrie nimic.
+
+Intră cu **contul tău** (`EPIC_EMAIL` + `EPIC_PAROLA` în env), nu cu cheia de
+service. Așa solicitantul iese corect, RLS rămâne în vigoare, iar echipei nu
+trebuie să-i dai cheia de service — adresa proiectului și cheia publishable sunt
+tot ce-i mai trebuie pe lângă contul ei.
+
+**Pentru Claude:** `.claude/skills/tichet-epic/` e o abilitate care îl învață să
+folosească scriptul, ca să poți cere „fă-i un tichet lui Roland despre X" direct
+în conversație. Ca să meargă în orice folder, nu doar în ăsta, copiaz-o o dată în
+`~/.claude/skills/`:
+
+```bash
+cp -r .claude/skills/tichet-epic ~/.claude/skills/
+```
+
+Apoi îți trebuie un `.env` cu cele patru valori de mai sus în folderul din care
+lucrezi (sau dai calea completă către cel din repo).
+
 ## Limite plan gratuit Supabase
 1 GB stocare, 50 MB per fișier, 50.000 utilizatori activi/lună. Proiectele gratuite se pun pe pauză după 7 zile fără activitate. Dacă echipa o folosește zilnic nu e problemă, altfel trecem pe Pro (25 $/lună, 100 GB).
