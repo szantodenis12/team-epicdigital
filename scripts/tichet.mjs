@@ -212,4 +212,14 @@ if (!args.dry) {
     console.log(`  #${r.id}  ${r.titlu}  → ${r.agent}${r.fisiere ? ` (${r.fisiere} fisiere)` : ""}`);
     console.log(`         ${SITE}/tichete/${r.id}`);
   }
+  /* Emailul de atribuire il trimite `createTicket` din aplicatie, nu scriptul:
+     aici se scrie direct in baza de date. Tichetul iese corect si apare imediat,
+     dar responsabilul nu afla de el pe email - iar asta e exact genul de lucru pe
+     care nu-l banuiesti si il descoperi cand te intreaba de ce n-a primit nimic.
+     Primul comentariu de pe platforma il notifica. */
+  if (rezultate.some((r) => r.agent !== "neatribuit")) {
+    console.log(`
+Atentie: emailul de atribuire NU a plecat - scriptul scrie direct in baza de date.`);
+    console.log(`Lasa un comentariu pe tichet (din platforma) ca sa fie anuntat responsabilul.`);
+  }
 }

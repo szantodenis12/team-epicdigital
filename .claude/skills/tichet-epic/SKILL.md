@@ -89,5 +89,10 @@ neatribuit.
   responsabilul nu mai umblă după ele prin alte conversații.
 - **Nu inventa termene.** Dacă omul n-a spus până când, lasă fără termen și
   întreabă-l, mai ales la `urgent`: SLA-ul începe să numere de la deschidere.
+- **Spune-i omului că emailul nu pleacă.** Scriptul scrie direct în baza de date,
+  iar emailul de atribuire îl trimite aplicația. Tichetul apare imediat și e
+  corect, dar responsabilul nu primește nimic pe email până nu lasă cineva un
+  comentariu pe tichet din platformă. Dacă trebuie anunțat acum, spune-i să
+  comenteze după ce creezi tichetul.
 - **Dă link-ul la final.** Scriptul tipărește adresa fiecărui tichet; pune-le în
   răspuns, ca omul să poată deschide direct ce ai creat.
