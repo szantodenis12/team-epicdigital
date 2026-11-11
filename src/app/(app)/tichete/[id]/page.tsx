@@ -6,6 +6,7 @@ import { loadBoard } from "@/lib/board";
 import { displayName, fmtDateTime } from "@/lib/format";
 import { Avatar, SlaBadge, StatusPill, UrgentTag } from "@/components/Badges";
 import { slaFor } from "@/lib/sla";
+import { allImagePaths } from "@/lib/comment-images";
 import type { ListParams } from "@/lib/tickets";
 import type { Activity, ChecklistItem, Comment, Ticket, TicketFile, TimeEntry, Timer as TimerRow } from "@/lib/types";
 import { Shell } from "../Shell";
@@ -55,6 +56,19 @@ export default async function TicketPage({ params, searchParams }: {
   const timerOthers = allTimers.filter((x) => x.ticket_id === t.id && x.profile_id !== profile.id);
   const sla = slaFor(t, b.sla);
 
+  /* Adresele semnate pentru imaginile lipite în comentarii, într-un singur apel
+     pentru tot tichetul. Bucket-ul e privat, deci fără ele n-ar apărea nimic;
+     o oră e mai mult decât stă cineva cu pagina deschisă, iar pagina se
+     randează pe server la fiecare cerere, deci adresa e mereu proaspătă. */
+  const cai = allImagePaths(((comments ?? []) as Comment[]).map((c) => c.body));
+  const imageUrls: Record<string, string> = {};
+  if (cai.length) {
+    const { data: semnate } = await supabase.storage.from("ticket-files").createSignedUrls(cai, 3600);
+    for (const x of semnate ?? []) {
+      if (x.path && x.signedUrl) imageUrls[x.path] = x.signedUrl;
+    }
+  }
+
   const detail = (
     <div className="p-5 sm:p-8">
       <Link href={`/tichete${b.qs}`} className={`mb-5 inline-flex items-center gap-1.5 text-sm text-muted hover:text-fg ${inSplit ? "lg:hidden" : ""}`}>
@@ -98,7 +112,7 @@ export default async function TicketPage({ params, searchParams }: {
         <BriefSection ticketId={t.id} brief={t.brief} />
         <Checklist ticketId={t.id} items={(checklist ?? []) as ChecklistItem[]} />
         <Files ticketId={t.id} files={(files ?? []) as TicketFile[]} people={b.peopleById} meId={profile.id} isAdmin={isAdmin} />
-        <Timeline ticketId={t.id} comments={(comments ?? []) as Comment[]} activity={(activity ?? []) as Activity[]} people={b.peopleById} meId={profile.id} isAdmin={isAdmin} />
+        <Timeline ticketId={t.id} comments={(comments ?? []) as Comment[]} activity={(activity ?? []) as Activity[]} people={b.peopleById} meId={profile.id} isAdmin={isAdmin} imageUrls={imageUrls} />
         <TimeLog
           ticketId={t.id}
           entries={(time ?? []) as TimeEntry[]}

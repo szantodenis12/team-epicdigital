@@ -6,6 +6,7 @@ import { requireAdmin, requireMember } from "@/lib/session";
 import { fmtDate, displayName } from "@/lib/format";
 import { notifyApproval, notifyAssigned, notifyComment, notifyMention, notifyStatus } from "@/lib/notify";
 import { cleanBrief, type Brief } from "@/lib/brief";
+import { imagePathsIn } from "@/lib/comment-images";
 import { STATUSES, label, type Priority, type Status, type TicketType, type Profile } from "@/lib/types";
 
 const s = (v: FormDataEntryValue | null) => (typeof v === "string" ? v.trim() : "");
@@ -157,7 +158,15 @@ export async function addComment(ticketId: number, body: string) {
 
 export async function deleteComment(id: string, ticketId: number) {
   const { supabase } = await requireMember();
-  await supabase.from("comments").delete().eq("id", id);
+  /* Imaginile lipite in comentariu nu sunt in `ticket_files`, deci nu le sterge
+     nimeni altcineva: fara pasul asta ar ramane in bucket pentru totdeauna, iar
+     planul gratuit are 1 GB. Se citeste inainte de stergere, altfel textul -
+     adica lista cailor - nu mai exista. */
+  const { data: c } = await supabase.from("comments").select("body").eq("id", id).maybeSingle<{ body: string }>();
+  const { error } = await supabase.from("comments").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+  const imagini = c ? imagePathsIn(c.body) : [];
+  if (imagini.length) await supabase.storage.from("ticket-files").remove(imagini);
   revalidatePath(`/tichete/${ticketId}`);
 }
 
@@ -225,6 +234,17 @@ export async function addTime(ticketId: number, minutes: number, note: string, s
   const { supabase, me } = await requireMember();
   const m = Math.round(minutes);
   if (!Number.isFinite(m) || m < 1 || m > 1440) throw new Error("Între 1 minut și 24 de ore.");
+
+  /* Data se verifica aici, nu doar in formular: o data din viitor strica
+     rapoartele tacut, iar `spent_on` n-are nicio restrictie in baza de date.
+     „Azi" se judeca pe ora Romaniei, ca si valoarea implicita a coloanei. */
+  if (spentOn) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(spentOn)) throw new Error("Data trebuie scrisă ca AAAA-LL-ZZ.");
+    const azi = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Bucharest" }))
+      .toISOString()
+      .slice(0, 10);
+    if (spentOn > azi) throw new Error("Nu poți pune ore pe o zi care n-a venit încă.");
+  }
   const row = { ticket_id: ticketId, profile_id: me.id, minutes: m, note: note.trim().slice(0, 300), ...(spentOn && { spent_on: spentOn }) };
   const { error } = await supabase.from("time_entries").insert(row);
   if (error) throw new Error(error.message);

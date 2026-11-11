@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { X } from "lucide-react";
+import { CalendarDays, X } from "lucide-react";
 import { addTime, deleteTime } from "@/app/actions/tickets";
-import { displayName, fmtDate, fmtMinutes } from "@/lib/format";
+import { displayName, fmtDate, fmtMinutes, todayISO } from "@/lib/format";
 import type { Profile, TimeEntry, Timer as TimerRow } from "@/lib/types";
 import { Timer } from "./Timer";
 import { userMessage } from "@/lib/errors";
@@ -35,12 +35,17 @@ export function TimeLog({ ticketId, entries, people, meId, isAdmin, timerMine, t
   const [custom, setCustom] = useState("");
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
+  /* O singură dată pentru tot blocul, nu una per buton: și „+30m", și ora
+     scrisă de mână se trec pe ziua aleasă aici. Altfel ai apăsa „+30m"
+     crezând că merge pe ieri, cum ai setat mai jos, și s-ar duce pe azi. */
+  const azi = todayISO();
+  const [data, setData] = useState(azi);
   const total = entries.reduce((n, e) => n + e.minutes, 0);
 
   const log = (minutes: number) =>
     start(async () => {
       try {
-        await addTime(ticketId, minutes, note);
+        await addTime(ticketId, minutes, note, data === azi ? undefined : data);
         setCustom("");
         setNote("");
         setError("");
@@ -89,6 +94,24 @@ export function TimeLog({ ticketId, entries, people, meId, isAdmin, timerMine, t
           <button className="btn-ghost !py-1.5 text-sm" disabled={pending || !custom}>Adaugă</button>
         </form>
         <input className="field !py-1.5 text-sm sm:max-w-64" placeholder="Pe ce (opțional)" value={note} onChange={(e) => setNote(e.target.value)} />
+        <label className={`flex items-center gap-2 rounded-lg border px-2.5 py-1 text-sm transition ${
+          data === azi ? "border-line text-muted" : "border-emerald/60 bg-emerald/10 text-emerald"
+        }`}>
+          <CalendarDays size={14} />
+          <span className="sr-only">Ziua în care ai lucrat</span>
+          <input
+            type="date"
+            className="bg-transparent text-sm outline-none [color-scheme:inherit]"
+            value={data}
+            max={azi}
+            onChange={(e) => setData(e.target.value || azi)}
+          />
+        </label>
+        {data !== azi && (
+          <button type="button" className="text-xs text-muted underline-offset-4 hover:text-fg hover:underline" onClick={() => setData(azi)}>
+            înapoi la azi
+          </button>
+        )}
       </div>
       {error && <p className="mt-2 text-sm text-danger">{error}</p>}
     </section>
